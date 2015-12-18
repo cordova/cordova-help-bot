@@ -19,7 +19,7 @@ controller.hears('hello','direct_message,direct_mention,mention',function(bot,me
 });
 
 // give the bot something to listen for.
-controller.hears('who is cordovahelpbot','direct_message,direct_mention,mention',function(bot,message) {
+controller.hears('who are you','direct_message,direct_mention,mention',function(bot,message) {
 
 	bot.identifyBot(function(err,identity) {
 	  // identity contains...
@@ -35,17 +35,23 @@ controller.hears('CB-[0-9]+',['direct_message','direct_mention','mention','ambie
   // do something to respond to message
   // all of the fields available in a normal Slack message object are available
   // https://api.slack.com/events/message
-  bot.reply(message,'You used a keyword!');
+  var replyText = '';
   
   for (var i=0; i < result.length; ++i) {
-	  //bot.reply(message, '<' + 'https://issues.apache.org/jira/browse/' + result[i] + '|' + result[i] +'>');
-	  //bot.reply(message, 'https://issues.apache.org/jira/browse/' + result[i]);
+       replyText+= '<' + 'https://issues.apache.org/jira/browse/' + result[i] + '|' + result[i] +'>\n';
 	  
-	  bot.reply(message,{
-	        text: '<' + 'https://issues.apache.org/jira/browse/' + result[i] + '|' + result[i] +'>',
-	        username: "CordovaHelpBot",
-	        icon_emoji: ":floppy_disk:",
-	      });
   }
+  
+  if (replyText !== '') {
+	  bot.reply(message,{
+		  pretext: 'Links from Apache Cordova JIRA',
+		  	text: replyText,
+	        username: "CordovaHelpBot",
+	        icon_emoji: ":gear:",
+	      });
+  	
+  }
+  
+  
 
 });
