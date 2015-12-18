@@ -4,6 +4,7 @@ var Botkit = require('botkit');
 var util = require('util');
 var rp = require('request-promise');
 var xml2js = require('xml2js');
+var Promise = require('bluebird');
 
 var controller = Botkit.slackbot({
   debug: false
@@ -31,31 +32,46 @@ controller.hears('who are you','direct_message,direct_mention,mention',function(
 	})
 });
 
+function newJiraXmlPromise(key) {
+	return new Promise(function(resolve, reject) {
+		key = key.toUpperCase();
+		var link = util.format('<https://issues.apache.org/jira/browse/%s|%s>', key, key);
+		rp(util.format('https://issues.apache.org/jira/si/jira.issueviews:issue-xml/%s/%s.xml', key, key))
+		   .then(function (xmlString) {
+			  xml2js.parseString(xmlString, function (err, result) {
+				  if (err) {
+					  reject(err);
+				  } else {
+					  var summary = result.rss.channel[0].item[0].summary[0];
+					  var title = util.format('[%s] %s', link, summary);
+					  resolve(title);
+				  }
+			  });
+		   })
+		   .catch(function (err) {
+		       reject(err);
+		   });
+	}); 	
+}
+
 controller.hears('CB-[0-9]+',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
 
 	var re = /(CB-[0-9]+)/gi;
 	var result = message.text.match(re);
-  
+	
 	if (result) {
-	  result.forEach(function(key){
-			key = key.toUpperCase();
-			var link = util.format('<https://issues.apache.org/jira/browse/%s|%s>', key, key);
-			rp(util.format('https://issues.apache.org/jira/si/jira.issueviews:issue-xml/%s/%s.xml', key, key))
-			   .then(function (xmlString) {
+		var promises = [];
+  
+		result.forEach(function(key){
+		  promises.push(newJiraXmlPromise(key));
+		});
 
-				  xml2js.parseString(xmlString, function (err, result) {
-					  var summary = result.rss.channel[0].item[0].summary[0];
-
-				 	  bot.reply(message,{
-						  	text: util.format('[%s] %s', link, summary),
-				 	        username: "CordovaHelpBot",
-				 	        icon_emoji: ":gear:",
-				 	      });
-				  });
-			   })
-			   .catch(function (err) {
-			       // Crawling failed...
-			   });
-	  });
+	  	Promise.all(promises).then(function(values) {
+			bot.reply(message,{
+						text: values.join('\n'),
+						username: "CordovaHelpBot",
+						icon_emoji: ":gear:",
+			}); 
+	  	});
 	}
 });
