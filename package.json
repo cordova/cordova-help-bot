@@ -9,6 +9,7 @@
   "author": "",
   "license": "Apachev2",
   "dependencies": {
-    "botkit": "0.0.4"
+    "botkit": "0.0.4",
+    "request-promise": "^1.0.2"
   }
 }

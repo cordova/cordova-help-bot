@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 var Botkit = require('botkit');
+var util = require('util');
+var rp = require('request-promise');
 
 var controller = Botkit.slackbot({
   debug: false
@@ -30,17 +32,21 @@ controller.hears('who are you','direct_message,direct_mention,mention',function(
 
 controller.hears('CB-[0-9]+',['direct_message','direct_mention','mention','ambient'],function(bot,message) {
 
-	var re = /(CB-[0-9]+)/g;
+	var re = /(CB-[0-9]+)/gi;
 	var result = message.text.match(re);
   // do something to respond to message
   // all of the fields available in a normal Slack message object are available
   // https://api.slack.com/events/message
   var replyText = '';
   
-  for (var i=0; i < result.length; ++i) {
-       replyText+= '<' + 'https://issues.apache.org/jira/browse/' + result[i] + '|' + result[i] +'>\n';
-	  
+  if (result) {
+	  for (var i=0; i < result.length; ++i) {
+		   var key = result[i].toUpperCase();
+		   replyText+= util.format('<https://issues.apache.org/jira/browse/%s|%s>\n', key, key);
+	   }
   }
+	
+// https://issues.apache.org/jira/si/jira.issueviews:issue-xml/CB-XXXX/CB-XXXX.xml
   
   if (replyText !== '') {
 	  bot.reply(message,{
