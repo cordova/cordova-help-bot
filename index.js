@@ -3,6 +3,7 @@
 var Botkit = require('botkit');
 var util = require('util');
 var rp = require('request-promise');
+var xml2js = require('xml2js');
 
 var controller = Botkit.slackbot({
   debug: false
@@ -37,27 +38,35 @@ controller.hears('CB-[0-9]+',['direct_message','direct_mention','mention','ambie
   // do something to respond to message
   // all of the fields available in a normal Slack message object are available
   // https://api.slack.com/events/message
-  var replyText = '';
   
   if (result) {
 	  for (var i=0; i < result.length; ++i) {
-		   var key = result[i].toUpperCase();
-		   replyText+= util.format('<https://issues.apache.org/jira/browse/%s|%s>\n', key, key);
+		  (function(key) {
+		   var link = util.format('<https://issues.apache.org/jira/browse/%s|%s>', key, key);
+		   rp(util.format('https://issues.apache.org/jira/si/jira.issueviews:issue-xml/%s/%s.xml', key, key))
+		       .then(function (xmlString) {
+				   
+				   
+				  var parseString = xml2js.parseString;
+				  parseString(xmlString, function (err, result) {
+					  var summary = result.rss.channel[0].item[0].summary[0];
+					  
+				 	  bot.reply(message,{
+						  	text: util.format('[%s] %s', link, summary),
+				 	        username: "CordovaHelpBot",
+				 	        icon_emoji: ":gear:",
+				 	      });
+					  
+				  });
+				   
+		           // Process xml...
+		       })
+		       .catch(function (err) {
+		           // Crawling failed...
+		       });
+		   })(result[i].toUpperCase());
 	   }
   }
-	
-// https://issues.apache.org/jira/si/jira.issueviews:issue-xml/CB-XXXX/CB-XXXX.xml
-  
-  if (replyText !== '') {
-	  bot.reply(message,{
-		  pretext: 'Links from Apache Cordova JIRA',
-		  	text: replyText,
-	        username: "CordovaHelpBot",
-	        icon_emoji: ":gear:",
-	      });
-  	
-  }
-  
   
 
 });

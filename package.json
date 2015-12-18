@@ -10,6 +10,7 @@
   "license": "Apachev2",
   "dependencies": {
     "botkit": "0.0.4",
-    "request-promise": "^1.0.2"
+    "request-promise": "^1.0.2",
+    "xml2js": "^0.4.15"
   }
 }
