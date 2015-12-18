@@ -35,38 +35,27 @@ controller.hears('CB-[0-9]+',['direct_message','direct_mention','mention','ambie
 
 	var re = /(CB-[0-9]+)/gi;
 	var result = message.text.match(re);
-  // do something to respond to message
-  // all of the fields available in a normal Slack message object are available
-  // https://api.slack.com/events/message
   
-  if (result) {
-	  for (var i=0; i < result.length; ++i) {
-		  (function(key) {
-		   var link = util.format('<https://issues.apache.org/jira/browse/%s|%s>', key, key);
-		   rp(util.format('https://issues.apache.org/jira/si/jira.issueviews:issue-xml/%s/%s.xml', key, key))
-		       .then(function (xmlString) {
-				   
-				   
-				  var parseString = xml2js.parseString;
-				  parseString(xmlString, function (err, result) {
+	if (result) {
+	  result.forEach(function(key){
+			key = key.toUpperCase();
+			var link = util.format('<https://issues.apache.org/jira/browse/%s|%s>', key, key);
+			rp(util.format('https://issues.apache.org/jira/si/jira.issueviews:issue-xml/%s/%s.xml', key, key))
+			   .then(function (xmlString) {
+
+				  xml2js.parseString(xmlString, function (err, result) {
 					  var summary = result.rss.channel[0].item[0].summary[0];
-					  
+
 				 	  bot.reply(message,{
 						  	text: util.format('[%s] %s', link, summary),
 				 	        username: "CordovaHelpBot",
 				 	        icon_emoji: ":gear:",
 				 	      });
-					  
 				  });
-				   
-		           // Process xml...
-		       })
-		       .catch(function (err) {
-		           // Crawling failed...
-		       });
-		   })(result[i].toUpperCase());
-	   }
-  }
-  
-
+			   })
+			   .catch(function (err) {
+			       // Crawling failed...
+			   });
+	  });
+	}
 });
