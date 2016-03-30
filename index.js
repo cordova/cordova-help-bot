@@ -75,3 +75,6 @@ controller.hears('CB-[0-9]+',['direct_message','direct_mention','mention','ambie
 	  	});
 	}
 });
+
+// JIRA REST API, here "orientation" is being searched for. paged at 5, starting at 0. only showing link and summary fields
+// https://issues.apache.org/jira/rest/api/2/search?jql=(summary%20~%20%22orientation%22%20OR%20description%20~%20%22orientation%22%20OR%20comment%20~%20%22orientation%22)%20AND%20project%20%3D%20CB%20AND%20resolution%20%3D%20Unresolved%20ORDER%20BY%20created&startAt=0&maxResults=5&fields=link,summary
