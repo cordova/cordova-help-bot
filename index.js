@@ -19,12 +19,11 @@ var bot = controller.spawn({
 function startRTM() {
 	// start Slack RTM
 	bot.startRTM(function(err,bot,payload) {
-		    if (err) {
-			console.log('Failed to start RTM')
-			return setTimeout(start_rtm, 60000);
-		    }
-		    console.log("RTM started!");
-	    });
+	    if (err) {
+		console.log('Failed to start RTM')
+		return setTimeout(start_rtm, 60000);
+	    }
+	    console.log("RTM started!");
 	});
 }
 
