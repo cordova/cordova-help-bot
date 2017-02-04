@@ -11,9 +11,14 @@ var controller = Botkit.slackbot({
 });
 
 // connect the bot to a stream of messages
-controller.spawn({
+var bot = controller.spawn({
   token: process.env.SLACK_TOKEN,
-}).startRTM()
+});
+
+// start Slack RTM
+bot.startRTM(function(err,bot,payload) {
+  // handle errors...
+});
 
 //prepare the webhook
 controller.setupWebserver(process.env.PORT || 3001, function(err, webserver) {
