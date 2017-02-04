@@ -15,6 +15,13 @@ controller.spawn({
   token: process.env.SLACK_TOKEN,
 }).startRTM()
 
+//prepare the webhook
+controller.setupWebserver(process.env.PORT || 3001, function(err, webserver) {
+    controller.createWebhookEndpoints(webserver, bot, function() {
+        // handle errors...
+    });
+});
+
 // give the bot something to listen for.
 controller.hears('hello','direct_message,direct_mention,mention',function(bot,message) {
 
