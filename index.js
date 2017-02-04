@@ -52,7 +52,8 @@ function newJiraXmlPromise(key) {
 		   .then(function (xmlString) {
 			  xml2js.parseString(xmlString, function (err, result) {
 				  if (err) {
-					  reject(err);
+					  var title = util.format('[%s] %s', key, '**error: issue key not found in JIRA**');
+					  resolve(title);					  
 				  } else {
 					  var summary = result.rss.channel[0].item[0].summary[0];
 					  var title = util.format('[%s] %s', link, summary);
@@ -61,7 +62,8 @@ function newJiraXmlPromise(key) {
 			  });
 		   })
 		   .catch(function (err) {
-		       reject(err);
+			var title = util.format('[%s] %s', key, '**error: issue key not found in JIRA**');
+			resolve(title);					  
 		   });
 	}); 	
 }
