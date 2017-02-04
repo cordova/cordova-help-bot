@@ -82,9 +82,9 @@ controller.hears('CB-[0-9]+',['direct_message','direct_mention','mention','ambie
 
 	  	Promise.all(promises).then(function(values) {
 			bot.reply(message,{
-						text: values.join('\n'),
-						username: "CordovaHelpBot",
-						icon_emoji: ":gear:",
+				text: values.join('\n'),
+				username: "CordovaHelpBot",
+				icon_emoji: ":gear:",
 			}); 
 	  	});
 	}
