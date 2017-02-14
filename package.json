@@ -4,16 +4,17 @@
   "description": "Helper slack bot for Apache Cordova",
   "main": "index.js",
   "scripts": {
-	"start": "node index.js"
+    "start": "node index.js"
   },
   "engines": {
     "node": "~4.2"
-  },  
+  },
   "author": "",
   "license": "Apachev2",
   "dependencies": {
     "bluebird": "^3.1.1",
     "botkit": "^0.2.0",
+    "newrelic": "^1.37.0",
     "request-promise": "^1.0.2",
     "xml2js": "^0.4.15"
   }

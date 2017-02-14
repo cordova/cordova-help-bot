@@ -5,6 +5,7 @@ var util = require('util');
 var rp = require('request-promise');
 var xml2js = require('xml2js');
 var Promise = require('bluebird');
+require ('newrelic');
 
 var controller = Botkit.slackbot({
   debug: false
