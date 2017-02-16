@@ -70,7 +70,9 @@ function newJiraXmlPromise(key) {
 					  resolve(title);					  
 				  } else {
 					  var summary = result.rss.channel[0].item[0].summary[0];
-					  var title = util.format('[%s] %s', link, summary);
+					  var status = result.rss.channel[0].item[0].status[0];
+					  var resolution = result.rss.channel[0].item[0].resolution[0];
+					  var title = util.format('[%s, (%s,%s)] %s', link, status, resolution, summary);
 					  resolve(title);
 				  }
 			  });
