@@ -16,25 +16,37 @@ var bot = controller.spawn({
   token: process.env.SLACK_TOKEN,
 });
 
-
 function startRTM() {
 	// start Slack RTM
 	bot.startRTM(function(err,bot,payload) {
 	    if (err) {
-		console.log('Failed to start RTM')
-		return setTimeout(start_rtm, 60000);
+			console.log('Failed to start RTM for bot1')
+			return setTimeout(startRtm, 60000);
 	    }
-	    console.log("RTM started!");
+	    console.log("RTM started for bot1!");
 	});
+
+	if (process.env.SLACK_TOKEN_2) {
+		var bot2 = controller.spawn({
+  			token: process.env.SLACK_TOKEN_2,
+		});
+		bot2.startRTM(function(err,bot,payload) {
+			if (err) {
+				console.log('Failed to start RTM for bot2')
+				return setTimeout(startRtm, 60000);
+			}
+			console.log("RTM started for bot2!");
+		});		
+	}
 }
 
 controller.on('rtm_close', function(bot, err) {
-        startRTM();
+    startRTM();
 });
 
 startRTM();
 
-//prepare the webhook
+// prepare the webhook
 controller.setupWebserver(process.env.PORT || 3001, function(err, webserver) {
     controller.createWebhookEndpoints(webserver, bot, function() {
         // handle errors...
@@ -43,10 +55,14 @@ controller.setupWebserver(process.env.PORT || 3001, function(err, webserver) {
 
 // give the bot something to listen for.
 controller.hears('hello','direct_message,direct_mention,mention',function(bot,message) {
-
   bot.reply(message,'Hello yourself.');
-
 });
+
+// give the bot something to listen for.
+controller.hears('help','direct_message,direct_mention,mention',function(bot,message) {
+  bot.reply(message,'Hello! I will expand any Cordova JIRA links in the form of CB-XXXX. Invite me to a channel, mention me in a message, or directly message me to see it in action.');
+});
+
 
 // give the bot something to listen for.
 controller.hears('who are you','direct_message,direct_mention,mention',function(bot,message) {
@@ -54,7 +70,7 @@ controller.hears('who are you','direct_message,direct_mention,mention',function(
 	bot.identifyBot(function(err,identity) {
 	  // identity contains...
 	  // {name, id, team_id}
-	  bot.reply(message, "I'm me.");
+	  bot.reply(message, util.format("I'm %s.", identity.name));
 	})
 });
 
