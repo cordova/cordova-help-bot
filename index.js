@@ -70,9 +70,10 @@ function newJiraXmlPromise(key) {
 					  resolve(title);					  
 				  } else {
 					  var summary = result.rss.channel[0].item[0].summary[0];
-					  var status = result.rss.channel[0].item[0].status[0];
-					  var resolution = result.rss.channel[0].item[0].resolution[0];
-					  var title = util.format('[%s, (%s,%s)] %s', link, status, resolution, summary);
+					  var status = result.rss.channel[0].item[0].status[0]._;
+					  var statusIconUrl = result.rss.channel[0].item[0].status[0].$.iconUrl;
+					  var resolution = result.rss.channel[0].item[0].resolution[0]._;
+					  var title = util.format('[%s, (%s, %s)] %s', link, status, resolution,summary);
 					  resolve(title);
 				  }
 			  });
