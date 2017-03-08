@@ -127,6 +127,7 @@ controller.hears('CB-[0-9]+', ['direct_message', 'direct_mention', 'mention', 'a
                 }
             });
             bot.reply(message, {
+                thread_ts: message.thread_ts,
                 text: values.join('\n'),
                 username: "CordovaHelpBot",
                 icon_emoji: ":gear:",
